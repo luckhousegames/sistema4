@@ -1,4 +1,5 @@
-"name": "Luckhouse Games - Sistema Local",
+{
+  "name": "Luckhouse Games - Sistema Local",
   "short_name": "LuckhouseSys",
   "description": "Sistema de gerenciamento para a Luckhouse Games.",
   "start_url": "./index.html",
@@ -35,14 +36,11 @@
       "sizes": "512x512",
       "purpose": "any maskable"
     }
-    // Se você tiver um favicon.svg e quiser usá-lo:
-    // {
-    //   "src": "favicon.svg",
-    //   "sizes": "any",
-    //   "type": "image/svg+xml",
-    //   "purpose": "any"
-    // }
   ],
+  "scope": "./",
+  "lang": "pt-BR",
+  "prefer_related_applications": false
+}
   "scope": "./",
   "lang": "pt-BR",
   "prefer_related_applications": false
