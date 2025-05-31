@@ -36,11 +36,14 @@
       "sizes": "512x512",
       "purpose": "any maskable"
     }
+    // Se você tiver um favicon.svg e quiser usá-lo:
+    // {
+    //   "src": "favicon.svg",
+    //   "sizes": "any",
+    //   "type": "image/svg+xml",
+    //   "purpose": "any"
+    // }
   ],
-  "scope": "./",
-  "lang": "pt-BR",
-  "prefer_related_applications": false
-}
   "scope": "./",
   "lang": "pt-BR",
   "prefer_related_applications": false
