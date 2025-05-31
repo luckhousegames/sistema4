@@ -1,1 +1,49 @@
-
+"name": "Luckhouse Games - Sistema Local",
+  "short_name": "LuckhouseSys",
+  "description": "Sistema de gerenciamento para a Luckhouse Games.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#007bff",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "favicon-96x96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "apple touch icon"
+    },
+    {
+      "src": "assets/icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+    // Se você tiver um favicon.svg e quiser usá-lo:
+    // {
+    //   "src": "favicon.svg",
+    //   "sizes": "any",
+    //   "type": "image/svg+xml",
+    //   "purpose": "any"
+    // }
+  ],
+  "scope": "./",
+  "lang": "pt-BR",
+  "prefer_related_applications": false
+}
