@@ -1,1 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.json"> <meta name="theme-color" content="#007bff" id="meta-theme-color"> <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LuckhouseSys">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png"> <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Luckhouse Games - Sistema Local</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body class="dark-theme"> <div class="d-flex" id="wrapper">
+        <aside class="bg-dark-custom text-white vh-100 p-3 shadow-lg" id="sidebar-wrapper">
+            <div class="sidebar-heading text-center py-3">
+                <img src="assets/logo.png" alt="Luckhouse Games Logo" style="width: 50px; margin-bottom: 10px;" id="sidebar-logo-img" onerror="this.style.display='none'; document.getElementById('sidebar-logo-text').style.display='block';">
+                <div id="sidebar-logo-text" style="display: none;">
+                    <span class="luckhouse-title">Luckhouse</span> <span class="games-title">Games</span>
+                </div>
+                <span id="sidebar-store-name-display" class="luckhouse-title d-block mt-2" style="font-size: 1.2rem;">Luckhouse Games</span>
+                <div id="user-info" class="mt-2" style="font-size: 0.9em;">
+                    <span id="logged-in-user" class="text-muted">Não Logado</span>
+                </div>
+            </div>
+            <nav class="nav flex-column">
+                <a class="nav-link nav-item-main active" href="#" data-target="dashboard"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+                <a class="nav-link nav-item-main" href="#" data-target="pdv"><i class="fas fa-cash-register me-2"></i> PDV</a>
+                <a class="nav-link nav-item-main" href="#" data-target="os"><i class="fas fa-tools me-2"></i> Ordens de Serviço</a>
+                <a class="nav-link nav-item-main" href="#" data-target="assistente-diagnostico"><i class="fas fa-comment-medical me-2"></i> Assist. Diagnóstico</a>
+                <a class="nav-link nav-item-main" href="#" data-target="clientes"><i class="fas fa-users me-2"></i> Clientes</a>
+                <a class="nav-link nav-item-main" href="#" data-target="produtos"><i class="fas fa-boxes me-2"></i> Produtos/Serviços</a>
+                <a class="nav-link nav-item-main" href="#" data-target="relatorios"><i class="fas fa-file-invoice me-2"></i> Relatórios/Emissões</a>
+                <a class="nav-link nav-item-admin d-none" href="#" data-target="admin-area"><i class="fas fa-shield-halved me-2"></i> Área Admin</a>
+                <a class="nav-link nav-item-main" href="#" data-target="configuracoes"><i class="fas fa-cog me-2"></i> Configurações</a>
+                <a class="nav-link" href="#" id="logout-button" style="display: none;"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+            </nav>
+            <div class="sidebar-footer mt-auto text-center text-muted small">
+                <p class="mb-0">&copy; <span id="currentYear"></span> <span id="footer-store-name">Luckhouse Games</span></p>
+                <p class="mb-0" style="font-size: 0.7em;">Versão 1.5.0</p>
+            </div>
+        </aside>
+        <main id="page-content-wrapper" class="flex-grow-1 p-4">
+            <button class="btn btn-primary-custom mb-3 d-md-none" id="menu-toggle"><i class="fas fa-bars"></i></button>
+
+            <section id="login-prompt" class="content-section text-center p-5">
+                <h1 class="text-primary-custom">Bem-vindo ao Sistema Luckhouse Games</h1>
+                <p class="lead">Por favor, faça login para continuar.</p>
+                <button class="btn btn-lg btn-success-custom" id="btn-show-login-modal" data-bs-toggle="modal" data-bs-target="#modalLogin">
+                    <i class="fas fa-sign-in-alt me-2"></i>Fazer Login
+                </button>
+            </section>
+
+            <section id="dashboard" class="content-section main-content d-none">
+                 <h1 class="mb-4 display-5 fw-bold text-primary-custom"><i class="fas fa-tachometer-alt me-2"></i> Bem-vindo(a), <span id="dashboard-username">Usuário</span>!</h1>
+                 <div class="row">
+                     <div class="col-md-3 mb-3"> <div class="card bg-dark-secondary text-white shadow h-100 dashboard-card" data-target="pdv"> <div class="card-body text-center"> <i class="fas fa-cash-register fa-3x text-primary-custom mb-2"></i> <h5 class="card-title">Nova Venda</h5> <p class="card-text small">Acessar o PDV.</p> </div> </div> </div>
+                     <div class="col-md-3 mb-3"> <div class="card bg-dark-secondary text-white shadow h-100 dashboard-card" id="card-nova-os"> <div class="card-body text-center"> <i class="fas fa-plus-circle fa-3x text-info mb-2"></i> <h5 class="card-title">Nova OS</h5> <p class="card-text small">Abrir nova Ordem de Serviço.</p> </div> </div> </div>
+                     <div class="col-md-3 mb-3"> <div class="card bg-dark-secondary text-white shadow h-100 dashboard-card" data-target="os"> <div class="card-body text-center"> <i class="fas fa-search fa-3x text-info-custom mb-2"></i> <h5 class="card-title">Consultar OS</h5> <p class="card-text small">Ver lista de OS.</p> </div> </div> </div>
+                     <div class="col-md-3 mb-3"> <div class="card bg-dark-secondary text-white shadow h-100 dashboard-card" data-target="clientes"> <div class="card-body text-center"> <i class="fas fa-users fa-3x text-success mb-2"></i> <h5 class="card-title">Clientes</h5> <p class="card-text small">Consultar e cadastrar.</p> </div> </div> </div>
+                 </div>
+                 <div class="mt-4 p-3 bg-dark-secondary rounded shadow"> <h4 class="text-white">Resumo de OS Recentes</h4> <div id="dashboard-os-recentes" class="list-group mt-2"> <p class="text-muted">Nenhuma OS recente para exibir.</p> </div> </div>
+            </section>
+
+            <section id="pdv" class="content-section main-content d-none">
+                <h1 class="mb-4 display-5 fw-bold text-primary-custom"><i class="fas fa-cash-register me-2"></i> Ponto de Venda (PDV)</h1>
+                <div class="row">
+                    <div class="col-lg-7 mb-3">
+                        <div class="card bg-dark-secondary shadow">
+                            <div class="card-header">Adicionar Produto/Serviço</div>
+                            <div class="card-body">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="pdv-search-item" placeholder="Buscar produto ou serviço...">
+                                    <button class="btn btn-outline-primary-custom" type="button" id="btn-pdv-search-item"><i class="fas fa-search"></i></button>
+                                    <button class="btn btn-outline-success-custom ms-2" type="button" data-bs-toggle="modal" data-bs-target="#modalNovoItemRapidoPDV">
+                                        <i class="fas fa-plus-circle me-1"></i> Novo Item Rápido
+                                    </button>
+                                </div>
+                                <div class="list-group" id="pdv-item-list" style="max-height: 200px; overflow-y: auto;"> <p class="text-muted p-2">Busque ou adicione itens.</p> </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="card bg-dark-secondary shadow">
+                            <div class="card-header">Carrinho</div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-9 mb-2">
+                                        <label for="pdv-cliente-select" class="form-label">Selecionar Cliente Cadastrado (Opcional):</label>
+                                        <select class="form-select" id="pdv-cliente-select"> <option value="">Consumidor (Não Identificado)</option> </select>
+                                    </div>
+                                    <div class="col-md-3 mb-2 d-flex align-items-end">
+                                        <button class="btn btn-sm btn-outline-info-custom w-100" id="btn-pdv-novo-cliente-rapido" type="button">
+                                            <i class="fas fa-user-plus"></i> Cliente
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label for="pdv-receipt-client-name" class="form-label">Nome do Cliente (p/ Recibo):</label>
+                                    <input type="text" class="form-control form-control-sm" id="pdv-receipt-client-name" placeholder="Opcional">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="pdv-receipt-client-contact" class="form-label">Contato Cliente (p/ Recibo - Tel/Email):</label>
+                                    <input type="text" class="form-control form-control-sm" id="pdv-receipt-client-contact" placeholder="Opcional">
+                                </div>
+
+                                <ul class="list-group mb-3" id="pdv-cart"> <li class="list-group-item d-flex justify-content-between align-items-center bg-dark-tertiary text-muted"> Nenhum item. </li> </ul>
+                                <div class="d-flex justify-content-between"> <span>Subtotal:</span> <span id="pdv-subtotal">R$ 0,00</span> </div>
+                                <div class="d-flex justify-content-between align-items-center"> <span>Desconto (%):</span> <input type="number" class="form-control form-control-sm w-25" id="pdv-discount-percentage" value="0" min="0" max="100"> </div>
+                                <div class="d-flex justify-content-between mt-1"> <span>Valor Desconto:</span> <span id="pdv-discount-value">R$ 0,00</span> </div>
+                                <hr class="border-light">
+                                <div class="d-flex justify-content-between fw-bold h5 text-primary-custom"> <span>TOTAL:</span> <span id="pdv-total">R$ 0,00</span> </div>
+                                <div class="mt-3">
+                                    <label for="payment-method" class="form-label">Forma de Pagamento:</label>
+                                    <select class="form-select bg-dark-tertiary text-white" id="payment-method"> <option>Dinheiro</option> <option>Débito</option> <option>Crédito</option> <option>PIX</option> <option>Transferência</option> </select>
+                                </div>
+                                <div class="mt-3 d-grid gap-2">
+                                    <button class="btn btn-success-custom btn-lg" id="btn-finalize-sale"><i class="fas fa-check-circle me-2"></i> Finalizar Venda</button>
+                                    <button class="btn btn-info-custom" id="btn-print-sale-receipt"><i class="fas fa-print me-2"></i> Imprimir Recibo</button>
+                                    <button class="btn btn-secondary" id="btn-download-sale-coupon"><i class="fas fa-file-pdf me-2"></i> Baixar Cupom (PDF)</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="os" class="content-section main-content d-none">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="display-5 fw-bold text-primary-custom mb-0"><i class="fas fa-tools me-2"></i> Ordens de Serviço</h1>
+                    <button class="btn btn-primary-custom" id="btn-nova-os-modal" data-bs-toggle="modal" data-bs-target="#modalNovaOS"><i class="fas fa-plus-circle me-2"></i> Nova OS</button>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="searchOSInput" placeholder="Buscar OS...">
+                    <button class="btn btn-outline-primary-custom" type="button" id="btn-search-os"><i class="fas fa-search"></i></button>
+                </div>
+                <div id="os-list-container" class="list-group"> <p class="text-muted p-2 no-os-message">Nenhuma OS cadastrada.</p> </div>
+            </section>
+
+            <section id="assistente-diagnostico" class="content-section main-content d-none">
+                <h1 class="mb-4 display-5 fw-bold text-primary-custom"><i class="fas fa-comment-medical me-2"></i> Assistente de Diagnóstico</h1>
+                <div class="card bg-dark-secondary shadow">
+                    <div class="card-header">Descreva o Problema</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="diag-device-type" class="form-label">Tipo de Dispositivo:</label>
+                                <select class="form-select" id="diag-device-type">
+                                    <option value="">Selecione o tipo...</option>
+                                    </select>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label for="diag-problem-description" class="form-label">Descrição do Problema (<span id="diag-char-count">0</span>/500 caracteres):</label>
+                                <textarea class="form-control" id="diag-problem-description" rows="4" maxlength="500" placeholder="Ex: Cliente relata que o PS4 não liga, apenas emite uma luz azul e desliga."></textarea>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary-custom" id="btn-analisar-problema"><i class="fas fa-search-plus me-2"></i> Analisar Problema</button>
+                        <hr class="my-4">
+                        <h5 class="text-primary-custom">Possíveis Causas / Sugestões:</h5>
+                        <div id="diag-suggestions-area" class="p-3 border rounded bg-dark-tertiary" style="min-height: 100px;">
+                            <p class="text-muted">Aguardando descrição do problema...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="clientes" class="content-section main-content d-none">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="display-5 fw-bold text-primary-custom mb-0"><i class="fas fa-users me-2"></i> Cadastro de Clientes</h1>
+                    <button class="btn btn-primary-custom" id="btn-novo-cliente-modal" data-bs-toggle="modal" data-bs-target="#modalNovoCliente"><i class="fas fa-user-plus me-2"></i> Novo Cliente</button>
+                </div>
+                 <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="searchClientInput" placeholder="Buscar cliente...">
+                    <button class="btn btn-outline-primary-custom" type="button" id="btn-search-client"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped table-hover">
+                        <thead> <tr> <th>Nome</th> <th>Telefone</th> <th>CPF</th> <th>Email</th> <th>Ações</th> </tr> </thead>
+                        <tbody id="client-list-tbody"> <tr class="no-clients-message"><td colspan="5" class="text-center text-muted">Nenhum cliente.</td></tr> </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="produtos" class="content-section main-content d-none">
+                 <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="display-5 fw-bold text-primary-custom mb-0"><i class="fas fa-boxes me-2"></i> Produtos e Serviços</h1>
+                    <div>
+                        <button class="btn btn-primary-custom me-2" id="btn-novo-produto-modal" data-bs-toggle="modal" data-bs-target="#modalNovoProduto"><i class="fas fa-plus-circle me-2"></i> Novo Produto</button>
+                        <button class="btn btn-info-custom" id="btn-novo-servico-modal" data-bs-toggle="modal" data-bs-target="#modalNovoServico"><i class="fas fa-concierge-bell me-2"></i> Novo Serviço</button>
+                    </div>
+                </div>
+                 <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="searchProductServiceInput" placeholder="Buscar produto ou serviço...">
+                    <button class="btn btn-outline-primary-custom" type="button" id="btn-search-prodserv"><i class="fas fa-search"></i></button>
+                </div>
+                <ul class="nav nav-tabs nav-tabs-custom mb-3" id="myTab" role="tablist"> <li class="nav-item" role="presentation"> <button class="nav-link active" id="tab-produtos" data-bs-toggle="tab" data-bs-target="#content-produtos">Produtos</button> </li> <li class="nav-item" role="presentation"> <button class="nav-link" id="tab-servicos" data-bs-toggle="tab" data-bs-target="#content-servicos">Serviços</button> </li> </ul>
+                <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade show active" id="content-produtos" role="tabpanel">
+                    <table class="table table-dark table-striped table-hover">
+                        <thead> <tr> <th>Nome</th> <th>Categoria</th> <th>Descrição</th> <th>Videogame</th><th>Consignado</th> <th>Preço</th> <th>Estoque</th> <th>Ações</th> </tr> </thead>
+                        <tbody id="product-list-tbody"> <tr><td colspan="8" class="text-center text-muted">Nenhum produto.</td></tr> </tbody>
+                    </table>
+                  </div>
+                  <div class="tab-pane fade" id="content-servicos" role="tabpanel">
+                    <table class="table table-dark table-striped table-hover">
+                        <thead> <tr> <th>Nome</th> <th>Descrição</th> <th>Custo Técnico</th> <th>Valor Cliente</th> <th>Ações</th> </tr> </thead>
+                        <tbody id="service-list-tbody"> <tr><td colspan="5" class="text-center text-muted">Nenhum serviço.</td></tr> </tbody>
+                    </table>
+                  </div>
+                </div>
+            </section>
+
+            <section id="relatorios" class="content-section main-content d-none">
+                <h1 class="mb-4 display-5 fw-bold text-primary-custom"><i class="fas fa-file-invoice me-2"></i> Relatórios e Emissões</h1>
+                <div class="card bg-dark-secondary shadow mb-4">
+                    <div class="card-header">Emissão Retroativa de Documentos</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="retro-os-select" class="form-label">Reemitir OS (Cliente):</label>
+                                <div class="input-group">
+                                    <select class="form-select" id="retro-os-select">
+                                        <option value="">Selecione uma OS...</option>
+                                    </select>
+                                    <button class="btn btn-outline-info-custom" type="button" id="btn-reemitir-os-pdf"><i class="fas fa-file-pdf"></i> Gerar PDF</button>
+                                    <button class="btn btn-outline-warning-custom" type="button" id="btn-editar-os-retro"><i class="fas fa-edit"></i> Editar OS</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="retro-venda-select" class="form-label">Reemitir Comprovante de Venda:</label>
+                                <div class="input-group">
+                                    <select class="form-select" id="retro-venda-select">
+                                        <option value="">Selecione uma Venda...</option>
+                                    </select>
+                                    <button class="btn btn-outline-info-custom" type="button" id="btn-reemitir-venda-pdf"><i class="fas fa-file-pdf"></i> Gerar Cupom</button>
+                                    <button class="btn btn-outline-info-custom" type="button" id="btn-reemitir-venda-recibo"><i class="fas fa-print"></i> Imprimir Recibo</button>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="retro-garantia-os-select" class="form-label">Gerar Termo de Garantia (baseado em OS):</label>
+                                <div class="input-group">
+                                    <select class="form-select" id="retro-garantia-os-select">
+                                        <option value="">Selecione uma OS concluída...</option>
+                                    </select>
+                                    <button class="btn btn-outline-primary-custom" type="button" id="btn-gerar-termo-garantia-os-pdf"><i class="fas fa-shield-alt"></i> Gerar Termo</button>
+                                </div>
+                            </div>
+                             <div class="col-md-6 mb-3">
+                                <label for="retro-garantia-venda-select" class="form-label">Gerar Termo de Garantia (baseado em Venda de Videogame):</label>
+                                <div class="input-group">
+                                    <select class="form-select" id="retro-garantia-venda-select">
+                                        <option value="">Selecione uma Venda com Videogame...</option>
+                                    </select>
+                                    <button class="btn btn-outline-primary-custom" type="button" id="btn-gerar-termo-garantia-venda-pdf"><i class="fas fa-shield-alt"></i> Gerar Termo</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-dark-secondary shadow mb-4">
+                    <div class="card-header">Consultar Registros de Entrega</div>
+                    <div class="card-body">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="searchEntregasInput" placeholder="Buscar entrega por OS ID, Cliente, Data...">
+                            <button class="btn btn-outline-primary-custom" type="button" id="btn-search-entregas"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped table-hover">
+                                <thead><tr><th>OS ID</th><th>Data Solic.</th><th>Destino</th><th>Valor</th><th>Observações</th><th>Operador</th></tr></thead>
+                                <tbody id="entregas-list-tbody"><tr class="no-entregas-message"><td colspan="6" class="text-center text-muted">Nenhum registro de entrega.</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-dark-secondary shadow mb-4">
+                    <div class="card-header">Consultar Empréstimos de Console</div>
+                    <div class="card-body">
+                         <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="searchEmprestimosInput" placeholder="Buscar empréstimo por OS ID, Cliente, Console...">
+                            <button class="btn btn-outline-primary-custom" type="button" id="btn-search-emprestimos"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped table-hover">
+                                <thead><tr><th>OS ID</th><th>Console</th><th>Serial</th><th>Data Emprést.</th><th>Prev. Devol.</th><th>Status</th><th>Operador</th><th>Ações</th></tr></thead>
+                                <tbody id="emprestimos-list-tbody"><tr class="no-emprestimos-message"><td colspan="8" class="text-center text-muted">Nenhum empréstimo registrado.</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="admin-area" class="content-section admin-content d-none">
+                 <h1 class="mb-4 display-5 fw-bold text-primary-custom"><i class="fas fa-shield-halved me-2"></i> Área Administrativa</h1>
+                 <div class="row">
+                     <div class="col-md-6 mb-4">
+                         <div class="card bg-dark-secondary text-white shadow">
+                             <div class="card-header">Faturamento Total</div>
+                             <div class="card-body"> <h3 class="text-success-custom" id="admin-faturamento-total">R$ 0,00</h3> <p class="text-muted">Soma de todas as vendas finalizadas.</p> </div>
+                         </div>
+                     </div>
+                      <div class="col-md-6 mb-4">
+                         <div class="card bg-dark-secondary text-white shadow">
+                             <div class="card-header">Relatório de Vendas</div>
+                             <div class="card-body"> <button class="btn btn-info-custom" id="btn-export-vendas-csv"> <i class="fas fa-file-csv me-2"></i> Exportar Vendas (CSV) </button> <p class="text-muted mt-2">Baixe um CSV com o detalhe das vendas.</p> </div>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="card bg-dark-secondary text-white shadow mt-2">
+                     <div class="card-header">Vendas Recentes (Gráfico)</div>
+                     <div class="card-body"> <canvas id="salesChartCanvas" style="max-height: 400px;"></canvas> <p class="text-muted mt-2 text-center">Exibindo as últimas 10 vendas.</p> </div>
+                 </div>
+            </section>
+
+            <section id="configuracoes" class="content-section main-content d-none">
+                <h1 class="mb-4 display-5 fw-bold text-primary-custom"><i class="fas fa-cog me-2"></i> Configurações</h1>
+                <div class="card bg-dark-secondary shadow mb-4">
+                    <div class="card-header">Dados da Loja</div>
+                    <div class="card-body">
+                        <div class="row"> <div class="col-md-6 mb-3"> <label for="config-nome-loja" class="form-label">Nome da Loja:</label> <input type="text" class="form-control" id="config-nome-loja"> </div> <div class="col-md-6 mb-3"> <label for="config-cnpj" class="form-label">CNPJ:</label> <input type="text" class="form-control" id="config-cnpj"> </div> </div>
+                        <div class="mb-3"> <label for="config-endereco" class="form-label">Endereço Completo:</label> <input type="text" class="form-control" id="config-endereco"> </div>
+                        <div class="row"> <div class="col-md-6 mb-3"> <label for="config-telefone" class="form-label">Telefone/WhatsApp Loja:</label> <input type="text" class="form-control" id="config-telefone"> </div> <div class="col-md-6 mb-3"> <label for="config-email" class="form-label">E-mail Loja:</label> <input type="email" class="form-control" id="config-email"> </div> </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3"> <label for="config-logo-url" class="form-label">URL do Logo:</label> <input type="text" class="form-control" id="config-logo-url" placeholder="assets/logo.png ou https://exemplo.com/logo.png"> <small class="form-text text-muted">Use caminho local (ex: assets/logo.png) ou URL completa. PNG transparente recomendado.</small> </div>
+                            <div class="col-md-6 mb-3"> <label for="config-admin-whatsapp" class="form-label">WhatsApp do Admin (Lucas) p/ Notificações:</label> <input type="tel" class="form-control" id="config-admin-whatsapp" placeholder="Ex: 55119XXXXXXXX"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3"> <label for="config-garantia-dias" class="form-label">Garantia Padrão (dias) para Videogames:</label> <input type="number" class="form-control" id="config-garantia-dias" value="90"> </div>
+                            <div class="col-md-6 mb-3"> <label for="config-tecnico-padrao-select" class="form-label">Técnico Padrão (para avisos de OS):</label> <select class="form-select" id="config-tecnico-padrao-select"><option value="">Nenhum</option></select></div>
+                        </div>
+                        <button type="button" class="btn btn-primary-custom" id="btn-save-config-loja"><i class="fas fa-save me-2"></i> Salvar Dados da Loja</button>
+                    </div>
+                </div>
+
+                <div class="card bg-dark-secondary shadow mb-4">
+                    <div class="card-header">Aparência</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="config-theme-select" class="form-label">Tema do Sistema:</label>
+                            <select class="form-select" id="config-theme-select">
+                                <option value="dark-theme">Escuro (Padrão)</option>
+                                <option value="light-theme">Claro</option>
+                                <option value="blue-theme">Azulado</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary-custom" id="btn-save-config-aparencia"><i class="fas fa-palette me-2"></i> Salvar Aparência</button>
+                    </div>
+                </div>
+                
+                <div class="card bg-dark-secondary shadow mb-4">
+                    <div class="card-header">Gerenciamento de Técnicos</div>
+                    <div class="card-body">
+                        <form id="formNovoTecnico" class="mb-3 row g-3 align-items-end">
+                            <input type="hidden" id="tecnico-id">
+                            <div class="col-md-5">
+                                <label for="tecnico-nome" class="form-label">Nome do Técnico:</label>
+                                <input type="text" class="form-control" id="tecnico-nome" required>
+                            </div>
+                            <div class="col-md-5">
+                                <label for="tecnico-telefone" class="form-label">Telefone do Técnico (WhatsApp):</label>
+                                <input type="tel" class="form-control" id="tecnico-telefone" placeholder="Ex: 55119XXXXXXXX" required>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-success-custom w-100"><i class="fas fa-plus-circle"></i> Salvar</button>
+                            </div>
+                        </form>
+                        <h5>Técnicos Cadastrados:</h5>
+                        <ul class="list-group" id="lista-tecnicos">
+                            <li class="list-group-item text-muted">Nenhum técnico cadastrado.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-dark-secondary shadow mb-4">
+                    <div class="card-header">Personalizar Mensagens WhatsApp</div>
+                    <div class="card-body">
+                        <form id="formConfigMensagensWpp">
+                            <p class="text-muted"><small>Use placeholders como: {{CLIENTE_NOME}}, {{OS_ID}}, {{EQUIPAMENTO_NOME}}, {{STATUS_OS}}, {{VALOR_ORCAMENTO}}, {{NOME_LOJA}}, {{TELEFONE_LOJA}}, {{EMAIL_LOJA}}, {{DIAS_GARANTIA}}, {{MENSAGEM_ATRASO}}</small></p>
+                            <div class="mb-3">
+                                <label for="config-wpp-msg-os-status" class="form-label">Atualização de Status da OS:</label>
+                                <textarea class="form-control" id="config-wpp-msg-os-status" rows="4" placeholder="Olá, {{CLIENTE_NOME}}! Sua OS #{{OS_ID}} ({{EQUIPAMENTO_NOME}}) teve o status atualizado para: {{STATUS_OS}}. {{MENSAGEM_ATRASO}}Equipe {{NOME_LOJA}}."></textarea>
+                            </div>
+                             <div class="mb-3">
+                                <label for="config-wpp-msg-os-pronta" class="form-label">OS Pronta para Retirada:</label>
+                                <textarea class="form-control" id="config-wpp-msg-os-pronta" rows="4" placeholder="Olá, {{CLIENTE_NOME}}! ✅ Sua OS #{{OS_ID}} ({{EQUIPAMENTO_NOME}}) está pronta para retirada! Valor final: {{VALOR_ORCAMENTO}}. {{MENSAGEM_ATRASO}}Att, {{NOME_LOJA}}."></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="config-wpp-msg-os-aprovacao" class="form-label">OS Aguardando Aprovação:</label>
+                                <textarea class="form-control" id="config-wpp-msg-os-aprovacao" rows="4" placeholder="Olá, {{CLIENTE_NOME}}! O orçamento para sua OS #{{OS_ID}} ({{EQUIPAMENTO_NOME}}) é de {{VALOR_ORCAMENTO}}. {{MENSAGEM_ATRASO}}Aguardamos sua aprovação. Att, {{NOME_LOJA}}."></textarea>
+                            </div>
+                             <div class="mb-3">
+                                <label for="config-wpp-msg-os-atraso-snippet" class="form-label">Mensagem Adicional para OS em Atraso (Usada em {{MENSAGEM_ATRASO}}):</label>
+                                <textarea class="form-control" id="config-wpp-msg-os-atraso-snippet" rows="3" placeholder="Pedimos desculpas pelo atraso na sua OS #{{OS_ID}}. Estamos trabalhando para concluí-la o mais rápido possível."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary-custom" id="btn-save-config-mensagens"><i class="fab fa-whatsapp me-2"></i> Salvar Mensagens</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card bg-dark-secondary shadow mt-4">
+                    <div class="card-header">Backup e Restauração</div>
+                    <div class="card-body">
+                        <p>Exporte ou importe dados da aplicação.</p>
+                        <button class="btn btn-success-custom me-2 mb-2" id="btn-export-data"><i class="fas fa-file-export me-2"></i> Exportar Dados</button>
+                        <label for="importFile" class="btn btn-info-custom me-2 mb-2"><i class="fas fa-file-import me-2"></i> Importar Dados</label>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                        <button class="btn btn-danger-custom mt-2 mt-md-0 mb-2" id="btn-reset-data"><i class="fas fa-trash-alt me-2"></i> Resetar Dados</button>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="text-center text-muted mt-5 pt-4 border-top border-secondary">
+                 <p><span id="footer-store-name-2">Luckhouse Games</span> &copy; <span id="footerCurrentYear"></span> | CNPJ: <span id="footer-cnpj">43.864.000/198</span></p>
+                 <p><span id="footer-address">Av. Itália, 200 – Shopping Amarilys, Itupeva – SP</span></p>
+                 <p>Tel/WhatsApp: <span id="footer-phone">(11) 99357-7209</span> | E-mail: <span id="footer-email">luckhousegames@gmail.com</span></p>
+                 <p><small>Siga-nos: <a href="https://www.instagram.com/luckhousegames" target="_blank" class="text-decoration-none">@luckhousegames</a> | Visite: <a href="https://www.luckhousegames.com.br" target="_blank" class="text-decoration-none">www.luckhousegames.com.br</a></small></p>
+            </footer>
+        </main>
+    </div>
+
+    <div class="modal fade" id="modalLogin" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="modalLoginLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"> <div class="modal-content bg-dark-secondary text-white"> <div class="modal-header border-secondary"> <h5 class="modal-title text-primary-custom" id="modalLoginLabel"><i class="fas fa-store me-2"></i> Login - Luckhouse Games</h5> </div> <div class="modal-body"> <form id="formLogin"> <div class="mb-3"> <label for="login-username" class="form-label">Usuário:</label> <input type="text" class="form-control" id="login-username" required> </div> <div class="mb-3"> <label for="login-password" class="form-label">Senha:</label> <input type="password" class="form-control" id="login-password" required> </div> <div class="alert alert-danger d-none" id="login-error-message" role="alert"> Usuário ou senha inválidos. </div> <button type="submit" class="btn btn-primary-custom w-100"><i class="fas fa-sign-in-alt me-2"></i> Entrar</button> </form> </div> </div> </div>
+    </div>
+
+    <div class="modal fade" id="modalNovaOS" tabindex="-1" aria-labelledby="modalNovaOSLabel" aria-hidden="true"> 
+        <div class="modal-dialog modal-lg modal-dialog-scrollable"> <div class="modal-content bg-dark-secondary text-white"> <div class="modal-header border-secondary"> <h5 class="modal-title text-primary-custom" id="modalNovaOSLabelDynamic">Nova Ordem de Serviço</h5> <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button> </div> <div class="modal-body"> <form id="formNovaOS"> <input type="hidden" id="os-id"> <input type="hidden" id="os-operador">
+            <div class="row"> <div class="col-md-6 mb-3"> <label for="os-cliente-select" class="form-label">Cliente *</label> <select class="form-select" id="os-cliente-select" required> <option value="">Selecione...</option> </select> <small><a href="#" id="link-novo-cliente-from-os">Ou cadastrar novo</a></small> </div> <div class="col-md-6 mb-3"> <label for="os-status" class="form-label">Status da OS *</label> <select class="form-select" id="os-status" required> <option>Aberta</option><option>Em Análise</option><option>Aguardando Aprovação</option><option>Aprovada - Em Reparo</option><option>Aguardando Peças</option><option>Concluída - Aguardando Retirada</option><option>Entregue</option><option>Cancelada</option><option>Orçamento Reprovado</option> </select> </div> </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="os-data-prevista" class="form-label">Data Prevista Conclusão:</label>
+                    <input type="date" class="form-control" id="os-data-prevista">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Situação de Prazo:</label>
+                    <p id="os-prazo-info" class="form-control-plaintext">-</p>
+                </div>
+                <div class="col-md-4 mb-3 align-self-end">
+                     <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="os-atraso-manual-check">
+                        <label class="form-check-label" for="os-atraso-manual-check">
+                            Marcar Atraso Manualmente
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-light"> <h6 class="text-primary-custom">Dados do Equipamento</h6>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                     <label for="os-equip-tipo" class="form-label">Tipo *</label>
+                     <select class="form-select" id="os-equip-tipo" required>
+                        <option value="">Selecione...</option>
+                        <option value="Console">Console</option>
+                        <option value="Controle">Controle</option>
+                        <option value="Portátil">Portátil</option>
+                        <option value="Acessório">Acessório</option>
+                        <option value="Computador/Notebook">Computador/Notebook</option>
+                        <option value="Outro">Outro (especificar)</option>
+                     </select>
+                     <input type="text" class="form-control mt-1 d-none outro-input" id="os-equip-tipo-outro" placeholder="Especificar tipo">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="os-equip-marca" class="form-label">Marca *</label>
+                    <select class="form-select" id="os-equip-marca" required>
+                        <option value="">Selecione...</option>
+                        <option value="Sony">Sony</option>
+                        <option value="Microsoft">Microsoft</option>
+                        <option value="Nintendo">Nintendo</option>
+                        <option value="Valve">Valve</option>
+                        <option value="PC Genérico">PC Genérico</option>
+                        <option value="Notebook Genérico">Notebook Genérico</option>
+                        <option value="Outra">Outra (especificar)</option>
+                    </select>
+                    <input type="text" class="form-control mt-1 d-none outro-input" id="os-equip-marca-outra" placeholder="Especificar marca">
+                </div>
+            </div>
+            <div class="row"> <div class="col-md-6 mb-3"> <label for="os-equip-modelo" class="form-label">Modelo *</label> <input type="text" class="form-control" id="os-equip-modelo" required> </div> <div class="col-md-6 mb-3"> <label for="os-equip-serial" class="form-label">Serial</label> <input type="text" class="form-control" id="os-equip-serial"> </div> </div>
+            <div class="mb-3"> <label for="os-problema" class="form-label">Problema Relatado *</label> <textarea class="form-control" id="os-problema" rows="3" required></textarea> </div>
+            <div class="mb-3"> <label for="os-diagnostico-tecnico" class="form-label">Diagnóstico</label> <textarea class="form-control" id="os-diagnostico-tecnico" rows="2"></textarea> </div>
+            <div class="mb-3"> <label for="os-acessorios-inclusos" class="form-label">Acessórios/Estado</label> <input type="text" class="form-control" id="os-acessorios-inclusos" placeholder="Ex: 1 Controle, Cabo HDMI, Caixa Original. Arranhões na carcaça."> </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="os-garantia-extendida-check">
+                <label class="form-check-label" for="os-garantia-extendida-check">
+                    Adicionar Garantia Extendida (+3 meses)?
+                </label>
+                <small id="os-garantia-extendida-valor-info" class="form-text text-muted d-block"></small>
+            </div>
+            <div class="mb-3"> <label for="os-imagens" class="form-label">Imagens</label> <input class="form-control" type="file" id="os-imagens" multiple accept="image/*"> </div>
+            <div class="mb-3"> <label for="os-observacoes" class="form-label">Observações/Solução</label> <textarea class="form-control" id="os-observacoes" rows="2"></textarea> </div>
+            <div class="mb-3"> <label for="os-orcamento" class="form-label">Orçamento Cliente (R$) * (sem garantia extendida)</label> <input type="number" step="0.01" class="form-control" id="os-orcamento" required> </div>
+            <hr class="border-light">
+             <div class="d-flex justify-content-between align-items-center mb-2">
+                 <h6 class="text-primary-custom mb-0">Termos de Garantia (Cliente)</h6>
+                <button type="button" class="btn btn-sm btn-outline-warning-custom d-none" id="btn-registrar-emprestimo-console-os" data-bs-toggle="modal" data-bs-target="#modalEmprestimoConsole">
+                    <i class="fas fa-gamepad me-1"></i> Registrar Empréstimo
+                </button>
+             </div>
+            <div class="p-2 border rounded bg-dark-tertiary" id="os-termos-garantia-preview"></div> </form> </div> <div class="modal-footer border-secondary"> <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button> <button type="button" class="btn btn-info-custom me-auto d-none" id="btn-notificar-admin-os"><i class="fab fa-whatsapp"></i> Notificar Admin</button> <button type="submit" class="btn btn-primary-custom" form="formNovaOS">Salvar OS</button> </div> </div> </div>
+    </div>
+    <div class="modal fade" id="modalNovoCliente" tabindex="-1" aria-labelledby="modalNovoClienteLabel" aria-hidden="true"> <div class="modal-dialog modal-dialog-scrollable"> <div class="modal-content bg-dark-secondary text-white"> <div class="modal-header border-secondary"> <h5 class="modal-title text-primary-custom" id="modalNovoClienteLabelDynamic">Novo Cliente</h5> <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button> </div> <div class="modal-body"> <form id="formNovoCliente"> <input type="hidden" id="cliente-id"> <div class="mb-3"> <label for="cliente-nome" class="form-label">Nome *</label> <input type="text" class="form-control" id="cliente-nome" required> </div> <div class="row"> <div class="col-md-6 mb-3"> <label for="cliente-telefone" class="form-label">Telefone *</label> <input type="tel" class="form-control" id="cliente-telefone" required> </div> <div class="col-md-6 mb-3"> <label for="cliente-cpf" class="form-label">CPF</label> <input type="text" class="form-control" id="cliente-cpf"> </div> </div> <div class="mb-3"> <label for="cliente-email" class="form-label">E-mail</label> <input type="email" class="form-control" id="cliente-email"> </div> <div class="mb-3"> <label for="cliente-endereco" class="form-label">Endereço</label> <input type="text" class="form-control" id="cliente-endereco"> </div> </form> </div> <div class="modal-footer border-secondary"> <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button> <button type="submit" class="btn btn-primary-custom" form="formNovoCliente">Salvar</button> </div> </div> </div>
+    </div>
+    <div class="modal fade" id="modalNovoItemRapidoPDV" tabindex="-1" aria-labelledby="modalNovoItemRapidoPDVLabel" aria-hidden="true"> <div class="modal-dialog"> <div class="modal-content bg-dark-secondary text-white"> <div class="modal-header border-secondary"> <h5 class="modal-title text-primary-custom" id="modalNovoItemRapidoPDVLabel">Novo Item Rápido</h5> <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button> </div> <div class="modal-body"> <form id="formNovoItemRapidoPDV"> <div class="mb-3"> <label for="item-rapido-nome" class="form-label">Nome *</label> <input type="text" class="form-control" id="item-rapido-nome" required> </div> <div class="mb-3"> <label for="item-rapido-preco" class="form-label">Preço/Valor *</label> <input type="number" step="0.01" class="form-control" id="item-rapido-preco" required> </div> <div class="mb-3"> <label for="item-rapido-tipo" class="form-label">Tipo *</label> <select class="form-select" id="item-rapido-tipo" required> <option value="produto">Produto</option> <option value="servico">Serviço</option> </select> </div> <div class="mb-3" id="item-rapido-estoque-group"> <label for="item-rapido-estoque" class="form-label">Estoque Inicial</label> <input type="number" class="form-control" id="item-rapido-estoque" value="1" min="0"> </div> </form> </div> <div class="modal-footer border-secondary"> <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button> <button type="submit" class="btn btn-primary-custom" form="formNovoItemRapidoPDV">Salvar e Add</button> </div> </div> </div>
+    </div>
+    <div class="modal fade" id="modalNovoProduto" tabindex="-1" aria-labelledby="modalNovoProdutoLabel" aria-hidden="true"> <div class="modal-dialog modal-lg"> <div class="modal-content bg-dark-secondary text-white"> <div class="modal-header border-secondary"> <h5 class="modal-title text-primary-custom" id="modalNovoProdutoLabelDynamic">Novo Produto</h5> <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button> </div> <div class="modal-body"> <form id="formNovoProduto"> <input type="hidden" id="produto-id"> <div class="mb-3"> <label for="produto-nome" class="form-label">Nome *</label> <input type="text" class="form-control" id="produto-nome" required> </div> <div class="mb-3"> <label for="produto-categoria" class="form-label">Categoria</label> <input type="text" class="form-control" id="produto-categoria"> </div> <div class="mb-3"> <label for="produto-descricao" class="form-label">Descrição (Opcional):</label> <textarea class="form-control" id="produto-descricao" rows="2"></textarea> </div> <div class="mb-3"> <label for="produto-acessorios" class="form-label">Acessórios Inclusos (p/ Videogames - opcional, separados por vírgula):</label> <input type="text" class="form-control" id="produto-acessorios" placeholder="Ex: 1 Controle, Cabo HDMI, Cabo Força"> </div> <div class="row"> <div class="col-md-6 mb-3"> <label for="produto-preco" class="form-label">Preço *</label> <input type="number" step="0.01" class="form-control" id="produto-preco" required> </div> <div class="col-md-6 mb-3"> <label for="produto-estoque" class="form-label">Estoque</label> <input type="number" class="form-control" id="produto-estoque" value="0" min="0"> </div> </div> <div class="row"> <div class="col-md-6 mb-3"> <div class="form-check"> <input class="form-check-input" type="checkbox" id="produto-is-videogame"> <label class="form-check-label" for="produto-is-videogame"> Videogame/Console (p/ garantia padrão)</label> </div> </div> <div class="col-md-6 mb-3"> <div class="form-check"> <input class="form-check-input" type="checkbox" id="produto-consignado"> <label class="form-check-label" for="produto-consignado">Produto em Consignação?</label></div></div></div></form> </div> <div class="modal-footer border-secondary"> <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button> <button type="submit" class="btn btn-primary-custom" form="formNovoProduto">Salvar</button> </div> </div> </div>
+    </div>
+    <div class="modal fade" id="modalNovoServico" tabindex="-1" aria-labelledby="modalNovoServicoLabel" aria-hidden="true"> <div class="modal-dialog"> <div class="modal-content bg-dark-secondary text-white"> <div class="modal-header border-secondary"> <h5 class="modal-title text-primary-custom" id="modalNovoServicoLabelDynamic">Novo Serviço</h5> <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button> </div> <div class="modal-body"> <form id="formNovoServico"> <input type="hidden" id="servico-id"> <div class="mb-3"> <label for="servico-nome" class="form-label">Nome *</label> <input type="text" class="form-control" id="servico-nome" required> </div> <div class="mb-3"> <label for="servico-descricao" class="form-label">Descrição</label> <textarea class="form-control" id="servico-descricao" rows="3"></textarea> </div> <div class="row"> <div class="col-md-6 mb-3"> <label for="servico-valor" class="form-label">Valor para Cliente (R$) *</label> <input type="number" step="0.01" class="form-control" id="servico-valor" required> </div> <div class="col-md-6 mb-3"> <label for="servico-custo-tecnico" class="form-label">Custo Técnico (R$)</label> <input type="number" step="0.01" class="form-control" id="servico-custo-tecnico" placeholder="Custo do serviço"> </div> </div> </form> </div> <div class="modal-footer border-secondary"> <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button> <button type="submit" class="btn btn-primary-custom" form="formNovoServico">Salvar</button> </div> </div> </div>
+    </div>
+    
+    <div class="modal fade" id="modalSelecionarServicoParaTecnico" tabindex="-1" aria-labelledby="modalSelecionarServicoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark-secondary text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-primary-custom" id="modalSelecionarServicoLabel">Selecionar Serviço Realizado</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Para a OS <strong id="modal-os-id-display">#XXX</strong>, qual serviço cadastrado foi realizado pelo técnico?</p>
+                    <input type="hidden" id="hidden-os-id-para-tecnico">
+                    <input type="hidden" id="hidden-acao-tecnico"> 
+                    <div class="mb-3">
+                        <label for="select-servico-tecnico" class="form-label">Serviço Realizado:</label>
+                        <select class="form-select" id="select-servico-tecnico">
+                            <option value="">Selecione um serviço...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary-custom" id="btn-confirmar-servico-tecnico">Confirmar Serviço</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalRegistrarEntrega" tabindex="-1" aria-labelledby="modalRegistrarEntregaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark-secondary text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-primary-custom" id="modalRegistrarEntregaLabel">Registrar Dados da Entrega</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formRegistrarEntrega">
+                        <input type="hidden" id="entrega-os-id">
+                        <p>Referente à OS: <strong id="entrega-os-id-display-form">#XXX</strong></p>
+                        <div class="mb-3">
+                            <label for="entrega-data" class="form-label">Data da Solicitação:</label>
+                            <input type="datetime-local" class="form-control" id="entrega-data" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="entrega-endereco-retirada" class="form-label">Endereço de Retirada:</label>
+                            <input type="text" class="form-control" id="entrega-endereco-retirada" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="entrega-endereco-destino" class="form-label">Endereço de Destino (Cliente):</label>
+                            <input type="text" class="form-control" id="entrega-endereco-destino" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="entrega-valor-corrida" class="form-label">Valor da Corrida (R$):</label>
+                            <input type="number" step="0.01" class="form-control" id="entrega-valor-corrida" placeholder="Ex: 15.50">
+                        </div>
+                        <div class="mb-3">
+                            <label for="entrega-observacoes" class="form-label">Observações:</label>
+                            <textarea class="form-control" id="entrega-observacoes" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-custom" form="formRegistrarEntrega">Salvar Registro de Entrega</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEmprestimoConsole" tabindex="-1" aria-labelledby="modalEmprestimoConsoleLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark-secondary text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-primary-custom" id="modalEmprestimoConsoleLabel">Registrar Empréstimo de Console</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEmprestimoConsole">
+                        <input type="hidden" id="emprestimo-os-id-ref">
+                        <p>Empréstimo para OS: <strong id="emprestimo-os-id-display">#XXX</strong></p>
+                        <div class="mb-3">
+                            <label for="emprestimo-console-modelo" class="form-label">Modelo do Console Emprestado:*</label>
+                            <input type="text" class="form-control" id="emprestimo-console-modelo" required placeholder="Ex: PS4 Slim, Xbox One S">
+                        </div>
+                        <div class="mb-3">
+                            <label for="emprestimo-console-serial" class="form-label">Serial do Console Emprestado (Opcional):</label>
+                            <input type="text" class="form-control" id="emprestimo-console-serial">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="emprestimo-data" class="form-label">Data do Empréstimo:*</label>
+                                <input type="date" class="form-control" id="emprestimo-data" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="emprestimo-data-prev-devolucao" class="form-label">Previsão Devolução:</label>
+                                <input type="date" class="form-control" id="emprestimo-data-prev-devolucao">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="emprestimo-observacoes" class="form-label">Observações:</label>
+                            <textarea class="form-control" id="emprestimo-observacoes" rows="2" placeholder="Ex: Acessórios inclusos no empréstimo (1 controle, cabos)."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-custom" form="formEmprestimoConsole">Salvar Empréstimo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="receipt-print-area" class="d-none"></div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090"> <div id="liveToast" class="toast text-white bg-primary-custom border-0" role="alert" aria-live="assertive" aria-atomic="true"> <div class="toast-header bg-primary-custom text-white"> <i class="fas fa-bell me-2"></i> <strong class="me-auto" id="toast-title">Luckhouse Games</strong> <small>Agora</small> <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button> </div> <div class="toast-body" id="toast-message"> Mensagem. </div> </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+<script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js') // Assumindo sw.js na raiz
+                    .then(registration => {
+                        console.log('Service Worker registrado com sucesso! Escopo:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Falha ao registrar o Service Worker:', error);
+                    });
+            });
+        } else {
+            console.log('Service Worker não é suportado neste navegador.');
+        }
+    </script>
+</body>
+</html>
